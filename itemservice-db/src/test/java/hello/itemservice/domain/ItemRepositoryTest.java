@@ -11,18 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+/*
+    스프링이 제공하는 @Transactional 애노테이션은 로직이 성공적으로 수행되면 커밋하도록 동작한다.
+    그런데 @Transactional 애노테이션을 테스트에서 사용하면 스프링은 테스트를 트랜잭션 안에서 실행하고, 테스트가 끝나면 트랜잭션을
+    자동으로 롤백시켜준다.
+*/
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
-
+/*
     @Autowired
     PlatformTransactionManager transactionManager;
     TransactionStatus status;
@@ -32,6 +40,7 @@ class ItemRepositoryTest {
         // 트랜잭션 시작
         status = transactionManager.getTransaction(new DefaultTransactionDefinition());
     }
+*/
 
     @AfterEach
     void afterEach() {
@@ -41,7 +50,7 @@ class ItemRepositoryTest {
         }
 
         // 트랜잭션 롤백
-        transactionManager.rollback(status);
+        // transactionManager.rollback(status);
     }
 
     @Test
