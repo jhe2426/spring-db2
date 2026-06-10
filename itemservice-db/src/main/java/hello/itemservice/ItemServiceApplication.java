@@ -31,6 +31,10 @@ public class ItemServiceApplication {
         return new TestDataInit(itemRepository);
     }
 
+/*
+    이렇게 데이터베이스에 접근하는 모든 설정 정보를 없애면 별다른 정보가 없어도 스프링 부트는 테스트에서 데이터베이스에 접근하는 코드를
+    임베디드 모드로 접근하는 데이터소스(DataSource) 코드를 아래와 같은 코드를 만들어서 제공해준다.
+
     @Bean
     @Profile("test")
     public DataSource dataSource() {
@@ -42,4 +46,5 @@ public class ItemServiceApplication {
         dataSource.setPassword("");
         return dataSource;
     }
+*/
 }
