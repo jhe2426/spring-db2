@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+/*
+    @Repository가 붙은 클래스는 예외 변환 AOP의 적용 대상이 됨
+    예외 변환 AOP 프록시는 JPA 관련 예외가 발생하면 JPA 예외 변환기를 통해 발생한 예외를 스프링 데이터 접근 예외로 변환해서 호출한 곳으로 반환을 해준다.
+*/
 @Repository
 @Transactional
 public class JpaItemRepository implements ItemRepository {
@@ -47,6 +51,7 @@ public class JpaItemRepository implements ItemRepository {
 
     @Override
     public List<Item> findAll(ItemSearchCond cond) {
+//        String jpql = "selectxxx i from Item i";
         String jpql = "select i from Item i";
 
         Integer maxPrice = cond.getMaxPrice();

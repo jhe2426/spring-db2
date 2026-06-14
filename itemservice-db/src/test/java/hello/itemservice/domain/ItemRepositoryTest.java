@@ -4,6 +4,7 @@ import hello.itemservice.repository.ItemRepository;
 import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     그런데 @Transactional 애노테이션을 테스트에서 사용하면 스프링은 테스트를 트랜잭션 안에서 실행하고, 테스트가 끝나면 트랜잭션을
     자동으로 롤백시켜준다.
 */
+@Slf4j
 @Transactional
 @SpringBootTest
 class ItemRepositoryTest {
@@ -91,6 +93,7 @@ class ItemRepositoryTest {
         Item item2 = new Item("itemA-2", 20000, 20);
         Item item3 = new Item("itemB-1", 30000, 30);
 
+        log.info("repository={}", itemRepository.getClass());
         itemRepository.save(item1);
         itemRepository.save(item2);
         itemRepository.save(item3);
