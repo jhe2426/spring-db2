@@ -57,8 +57,6 @@ public class InternalCallV1Test {
         private void printTxInfo() {
             boolean txActive = TransactionSynchronizationManager.isActualTransactionActive();
             log.info("tx active={} ", txActive);
-            boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-            log.info("tx readOnly={} ", readOnly);
         }
     }
 
