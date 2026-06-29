@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -114,6 +115,32 @@ class MemberServiceTest {
         // when
         assertThatThrownBy(() -> memberService.joinV1(username))
                 .isInstanceOf(RuntimeException.class);
+
+        // when: 모든 데이터가 롤백된다.
+        assertTrue(memberRepository.find(username).isEmpty());
+        assertTrue(logRepository.find(username).isEmpty());
+    }
+    
+    /*
+        memberService    @Transactional:ON
+        memberRepository @Transactional:ON
+        logRepository    @Transactional:ON Exception
+    */
+    /*
+        아래의 코드는 joinV2() 메서드 내부의 로직에는 LogRepository에서 예외가 발생하면 런타임 예외를 잡아서 처리를 하므로 joinV2() 메서드에는
+        런타임 예외가 던져지지 않으므로 물리 트랜잭션을 가지고 있는 joinV2()가 정상적으로 커밋이 되어 회원에 대한 정보는 데이터베이스에 저장이 될 것이라고
+        예상하기 쉽다.
+        하지만, 내부 트랜잭션에 롤백이 발생하면 rollbackOnly를 설정하기 때문에 결과적으로 정상 흐름 처리를 해서 외부 트랜잭션에서 커밋 호출을 해도
+        물리 트랜잭션은 롤백이 되어 버리고 'UnexpectedRollbackException이 던져진다.
+    */
+    @Test
+    void recoverException_fail() {
+        // given
+        String username = "로그예외_recoverException_fail";
+
+        // when
+        assertThatThrownBy(() -> memberService.joinV2(username))
+                .isInstanceOf(UnexpectedRollbackException.class);
 
         // when: 모든 데이터가 롤백된다.
         assertTrue(memberRepository.find(username).isEmpty());
