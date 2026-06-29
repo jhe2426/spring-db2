@@ -120,7 +120,7 @@ class MemberServiceTest {
         assertTrue(memberRepository.find(username).isEmpty());
         assertTrue(logRepository.find(username).isEmpty());
     }
-    
+
     /*
         memberService    @Transactional:ON
         memberRepository @Transactional:ON
@@ -144,6 +144,32 @@ class MemberServiceTest {
 
         // when: 모든 데이터가 롤백된다.
         assertTrue(memberRepository.find(username).isEmpty());
+        assertTrue(logRepository.find(username).isEmpty());
+    }
+
+    /*
+        memberService    @Transactional:ON
+        memberRepository @Transactional:ON
+        logRepository    @Transactional:ON(REQUIRES_NEW) Exception
+    */
+    /*
+        memberRepository는 outer 트랜잭션에 포함되어 메서드 종료 시 commit된다.
+
+        logRepository는 REQUIRES_NEW로 인해 별도의 트랜잭션에서 즉시 commit/rollback 된다.
+        따라서 log 저장 실패가 발생하더라도 member 저장에는 영향을 주지 않는다.
+
+        단, RuntimeException이 외부로 전파되면 outer 트랜잭션도 rollback될 수 있으므로 예외를 반드시 내부에서 처리해야 한다.
+    */
+    @Test
+    void recoverException_success() {
+        // given
+        String username = "로그예외_recoverException_success";
+
+        // when
+        memberService.joinV2(username);
+
+        // when: member 저장, log 롤백
+        assertTrue(memberRepository.find(username).isPresent());
         assertTrue(logRepository.find(username).isEmpty());
     }
 }
